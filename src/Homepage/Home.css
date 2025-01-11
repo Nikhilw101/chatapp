@@ -1,0 +1,37 @@
+.icons1
+{
+ 
+    margin-left: 30px;
+    margin-top: 15px;
+ 
+}
+
+.icons{
+
+    margin-right: 30px;
+    margin-top: 15px;
+}
+
+.myimage{
+
+  margin-top: 100px;
+   
+}
+
+.navbar{
+    background: transparent;
+}
+#headp {
+    letter-spacing: 7px; /* Adjust the value as needed */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 25px;
+    margin-left: 23px;
+    margin-top: 10px;
+}
+#para{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-weight: lighter;
+    font-size: 24px;
+    margin-left: 23px;
+}
+
