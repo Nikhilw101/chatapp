@@ -27,7 +27,7 @@ function App() {
       formData.append('question', question);
 
       // Make a POST request with FormData
-      const res = await axios.post('https://chatappbk-flask.onrender.com', formData, {
+      const res = await axios.post('https://chatappbk-flask.onrender.com/api/question', formData, {
         headers: {
           'Content-Type': 'multipart/form-data', // Allow FormData to set its boundary
         },
