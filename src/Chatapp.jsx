@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [question, setQuestion] = useState('');
-  const [response, setResponse] = useState('');
+  const [chatHistory, setChatHistory] = useState([]); // Array to store chat history
   const [isSending, setIsSending] = useState(false); // To track sending state
   const messagesEndRef = useRef(null);
 
@@ -13,31 +13,43 @@ function App() {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [response]);
+  }, [chatHistory]);
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!question.trim()) return; // Ignore empty input
 
+    const newQuestion = question.trim();
     setIsSending(true); // Show sending effect
 
     try {
       const formData = new FormData();
-      formData.append('question', question);
+      formData.append('question', newQuestion);
 
       // Make a POST request with FormData
-      const res = await axios.post('https://chatappbk-flask.onrender.com/api/question', formData, {
+      const res = await axios.post('http://localhost:5000/api/question', formData, {
         headers: {
           'Content-Type': 'multipart/form-data', // Allow FormData to set its boundary
         },
       });
 
-      setResponse(res.data.response); // Store the response
-      console.log('AI Response:', res.data.response);
+      const aiResponse = res.data.response; // Store the response
+      console.log('AI Response:', aiResponse);
+
+      // Update chat history with the new question and response
+      setChatHistory((prevHistory) => [
+        ...prevHistory,
+        { type: 'user', message: newQuestion },
+        { type: 'ai', message: aiResponse },
+      ]);
     } catch (error) {
       console.error('Error generating response:', error);
-      setResponse('Error: Could not fetch the response from the server.');
+      setChatHistory((prevHistory) => [
+        ...prevHistory,
+        { type: 'user', message: newQuestion },
+        { type: 'ai', message: 'Error: Could not fetch the response from the server.' },
+      ]);
     } finally {
       setIsSending(false); // Remove sending effect
       setQuestion(''); // Clear input
@@ -49,20 +61,19 @@ function App() {
       <h1 className="mb-4 gradient-text">AI Chat Application</h1>
       <div className="chat-window card shadow-sm">
         <div className="messages p-3 overflow-auto flex-grow-1">
-          {response && (
-            <>
-              <div className="message user-message d-flex justify-content-end mb-3">
-                <span className="bubble user-bubble p-2 rounded">
-                  {question}
-                </span>
-              </div>
-              <div className="message ai-message d-flex justify-content-start mb-3">
-                <span className="bubble ai-bubble p-2 rounded">
-                  {response}
-                </span>
-              </div>
-            </>
-          )}
+          {chatHistory.map((chat, index) => (
+            <div
+              key={index}
+              className={`message ${chat.type === 'user' ? 'user-message' : 'ai-message'} d-flex mb-3`}
+              style={{ justifyContent: chat.type === 'user' ? 'flex-end' : 'flex-start' }}
+            >
+              <span
+                className={`bubble ${chat.type === 'user' ? 'user-bubble' : 'ai-bubble'} p-2 rounded`}
+              >
+                {chat.message}
+              </span>
+            </div>
+          ))}
           {isSending && (
             <div className="d-flex justify-content-end">
               <span className="text-muted fst-italic">Sending...</span>
